@@ -53,18 +53,15 @@ let visitor = {
     canDrink(beverage) {
         let capacityDrink;
 
-        if (beverage.type === "lowAclogol") {
+        if (beverage.type === "lowAlcohol") {
             capacityDrink = 10;
-        } else if (beverage.type === "highAclogol") {
+        } else if (beverage.type === "highAlcohol") {
             capacityDrink = 20;
-
-        } else if (beverage.type === "nonAlcohol") {
-            capacityDrink = 0;
         } else {
-            console.log("This product is already not available!!!")
+            console.log("Этот товар уже недоступен!")
         }
 
-        return this.capacity > capacityDrink;
+        return this.capacity >= capacityDrink;
     },
     puke() {
 
@@ -75,59 +72,52 @@ let visitor = {
         console.log(this.name + ": 🤮🤮🤮")
     },
     drink(beverage) {
+        try {
+            if (this.canDrink(beverage)) {
+                switch (beverage.type) {
+                    case "lowAlcohol":
+                        this.capacity -= 10;
+                        break;
+                    case "highAlcohol":
+                        this.capacity -= 20;
+                        break;
+                    default:
+                        console.log(`Этот товар недоступен!`);
+                }
 
-        let capacityDrink;
-
-        if (beverage.type === "lowAclogol") {
-            capacityDrink = 10;
-        } else if (beverage.type === "highAclogol") {
-            capacityDrink = 20;
-
-        } else if (beverage.type === "nonAlcohol") {
-            capacityDrink = 0;
-        }
-
-        if (this.capacity > capacityDrink) {
-            switch (beverage.type) {
-                case "highAclogol":
-                    this.capacity -= capacityDrink;
-                    console.log(this.name + " drink " + beverage.name);
-                    break;
-                case "lowAclogol":
-                    this.capacity -= capacityDrink;
-                    console.log(this.name + " drink " + beverage.name);
-                    break;
-                case "nonAlcohol":
-                    this.capacity -= capacityDrink;
-                    console.log(this.name + " drink " + beverage.name);
-                    break;
-                default:
-                    console.log(`This alcohol isn't exist`);
+            } else {
+                this.puke();
             }
-
-        } else {
-            this.puke();
+        }catch (e){
+            console.log(`Этот товар уже недоступен!`);
         }
     },
     eat: function (snack) {
-        if (snack.isEffective) {
-            this.capacity += 10;
-        } else {
-            this.capacity += 5;
+        try {
+            if (snack.isEffective) {
+                this.capacity += 10;
+            } else {
+                this.capacity += 5;
+            }
+        }catch (e){
+            console.log(`Этот товар уже недоступен!`);
         }
-        console.log(this.name + " ate " + snack.name);
+
     }
 };
 
 let bar = {
     name: "GOOSE PUB",
-    capacity: 3,
+    capacity: 2,
     drinks: [
-        {name: "Сognac", type: "highAclogol"},
-        {name: "Shake", type: "lowAclogol"},
-        {name: "Red bull", type: "nonAclogol"}
+        {name: "Сognac", type: "highAlcohol"},
+        {name: "Tequila", type: "highAlcohol"},
+        {name: "Shake", type: "lowAlcohol"},
     ],
-    snacks: [],
+    snacks: [
+        {name: "Burger", isEffective: true},
+        {name: "Dorado", isEffective: true},
+    ],
     visitors: [],
     enter(visitor) {
         let isCapacity = this.capacity > this.visitors.length;
@@ -135,49 +125,40 @@ let bar = {
             this.visitors.push(visitor);
             this.greet(visitor);
         } else if (visitor.age >= 18 && !isCapacity) {
-            this.decline(visitor)
+            this.decline();
         } else {
             this.expel(visitor);
         }
     },
     greet(visitor) {
-        console.log(`Hi, ${visitor.name}! Welcome to ${this.name}`)
+        console.log(`Привет, ${visitor.name}! Добро пожаловать в ${this.name}`);
     },
-    expel(visitor) {
-        console.log(`GO AWAY ${visitor.name}! You are less 18 old!`)
+    expel() {
+        console.log(`Проваливай!`);
     },
     decline(visitor) {
-        console.log(`SORRY ${visitor.name}! Today ${this.name} is full! See you later!`)
+        console.log(`Извини ${visitor.name}! Сегодня ${this.name} переполнен! Попробуй позже!`);
     },
     makeOrder(item) {
-        let result;
-        let count = 0;
-        this.drinks.forEach(index => {
-            result = index.name.includes(item);
 
-            if (result) {
-                console.log(count);
-                let currentIndex = this.drinks.indexOf(index);
-                this.drinks.splice(currentIndex, 1);
-                return this.drinks;
-            }else {
-                count=-1;
-            }
-        });
-        if (count === 0) {
-            this.snacks.forEach(index => {
-                result = index.name.includes(item);
-
-                if (result) {
-                    let currentIndex = this.snacks.indexOf(index);
-                    this.snacks.splice(currentIndex, 1);
-                    return this.snacks;
-                }
-            });
+        let findDrink = (arr) => {
+            let i = arr.findIndex(index => index.name === item);
+            let arrItem = arr[i];
+            arr.splice(i, 1);
+            return arrItem;
         }
-        else if(count===-1){
-            console.log(count);
-            console.log(`This product is already not available!`)
+
+        let drink = findDrink(this.drinks);
+        if (drink !== undefined) {
+            return drink;
+
+        } else {
+            let snack = findDrink(this.snacks);
+            if (snack !== undefined) {
+                return snack;
+            } else {
+                console.log(`Извините! ${item} больше нет!`);
+            }
         }
     },
 
@@ -188,7 +169,7 @@ let bar = {
 let luna = Object.create(visitor);
 luna.name = "Luna";
 luna.age = 30;
-luna.capacity = 60;
+luna.capacity = 50;
 
 let lisa = Object.create(visitor);
 lisa.name = "Lisa";
@@ -204,19 +185,15 @@ bob.capacity = 100;
 // initialization OBJECT beverage
 const vodka = Object.create(beverage);
 vodka.name = "Vodka";
-vodka.type = "highAclogol";
+vodka.type = "highAlcohol";
 
 const whiskey = Object.create(beverage);
 whiskey.name = "Whiskey";
-whiskey.type = "highAclogol";
+whiskey.type = "highAlcohol";
 
 const beer = Object.create(beverage);
 beer.name = "Beer";
-beer.type = "lowAclogol";
-
-const water = Object.create(beverage);
-water.name = "Water";
-water.type = "nonAlcohol";
+beer.type = "lowAlcohol";
 
 
 // initialization OBJECT snack
@@ -233,9 +210,8 @@ chips.name = "Сhips";
 chips.isEffective = false;
 
 
-
 //initialization OBJECT Bar
-bar.drinks.push(vodka, whiskey, beer, water);
+bar.drinks.push(vodka, whiskey, beer);
 bar.snacks.push(wings, steak, chips);
 bar.visitors.push(bob);
 
@@ -246,28 +222,46 @@ console.log(bar);
 bar.enter(luna);
 bar.enter(lisa);
 
+const guinness = bar.makeOrder("Beer");
+luna.drink(guinness);
+const jack = bar.makeOrder("Whiskey");
+bob.drink(jack);
 
-bar.makeOrder('Shakef');
-console.log(bar);
-luna.drink(water);
+const BoraBora = bar.makeOrder("Shake");
+luna.drink(BoraBora);
 
-luna.canDrink(vodka);
-luna.drink(vodka);
+const nemiroff = bar.makeOrder("Vodka");
+luna.drink(nemiroff);
+
+const sierra =bar.makeOrder("Tequila");
+luna.drink(sierra);
+
+const meat  = bar.makeOrder("Steak");
+bob.eat(meat);
+
+const fish = bar.makeOrder("Dorado");
+bob.eat(fish);
+
+const chicken = bar.makeOrder("Chicken wings");
+luna.eat(chicken);
+
+const candy = bar.makeOrder("Candy");
+luna.eat(candy);
+
+
+const juice = bar.makeOrder("Juice");
+luna.drink(juice);
+
+luna.puke();
+
 console.log(luna);
-luna.drink(whiskey);
-console.log(luna);
-luna.drink(beer);
-console.log(luna);
-luna.drink(water);
-console.log(luna);
-luna.drink(beer);
-console.log(luna);
-luna.drink(beer);
-console.log(luna);
-luna.eat(wings);
-console.log(luna);
-luna.eat(steak);
-console.log(luna);
+console.log(bob);
+
+
+
+
+
+
 
 
 
