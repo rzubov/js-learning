@@ -53,7 +53,9 @@ let visitor = {
     canDrink(beverage) {
         let capacityDrink;
 
-        if (beverage.type === "lowAlcohol") {
+        if (beverage.type === undefined) {
+            capacityDrink = 0;
+        } else if (beverage.type === "lowAlcohol") {
             capacityDrink = 10;
         } else if (beverage.type === "highAlcohol") {
             capacityDrink = 20;
@@ -72,37 +74,42 @@ let visitor = {
         console.log(this.name + ": 🤮🤮🤮")
     },
     drink(beverage) {
-        try {
-            if (this.canDrink(beverage)) {
-                switch (beverage.type) {
-                    case "lowAlcohol":
-                        this.capacity -= 10;
-                        break;
-                    case "highAlcohol":
-                        this.capacity -= 20;
-                        break;
-                    default:
-                        console.log(`Этот товар недоступен!`);
-                }
 
-            } else {
-                this.puke();
+        if (this.canDrink(beverage)) {
+            switch (beverage.type) {
+                case "lowAlcohol":
+                    this.capacity -= 10;
+                    break;
+                case "highAlcohol":
+                    this.capacity -= 20;
+                    break;
+                default:
+                    console.log(`Этот товар недоступен!`);
             }
-        }catch (e){
-            console.log(`Этот товар уже недоступен!`);
+
+        } else {
+            this.puke();
         }
+
     },
     eat: function (snack) {
-        try {
-            if (snack.isEffective) {
-                this.capacity += 10;
-            } else {
-                this.capacity += 5;
-            }
-        }catch (e){
-            console.log(`Этот товар уже недоступен!`);
-        }
 
+        switch (snack.isEffective) {
+            case true:
+                this.capacity += 10;
+                break;
+            case false:
+                this.capacity += 5;
+                break;
+            case undefined:
+                this.capacity += 0;
+                break;
+            default:
+                console.log(`Этот товар недоступен!`);
+        }
+        if (this.capacity > 100) {
+            this.capacity = 100;
+        }
     }
 };
 
@@ -148,16 +155,22 @@ let bar = {
             return arrItem;
         }
 
-        let drink = findDrink(this.drinks);
-        if (drink !== undefined) {
-            return drink;
-
+        let Drink = findDrink(this.drinks);
+        if (Drink !== undefined) {
+            return Drink;
         } else {
-            let snack = findDrink(this.snacks);
-            if (snack !== undefined) {
-                return snack;
+            let Snack = findDrink(this.snacks);
+            if (Snack !== undefined) {
+                return Snack;
             } else {
                 console.log(`Извините! ${item} больше нет!`);
+                Drink = beverage.type === undefined;
+                Snack = snack.isEffective = undefined;
+                return {
+                    Drink,
+                    Snack
+                }
+
             }
         }
     },
@@ -233,14 +246,16 @@ luna.drink(BoraBora);
 const nemiroff = bar.makeOrder("Vodka");
 luna.drink(nemiroff);
 
-const sierra =bar.makeOrder("Tequila");
+const sierra = bar.makeOrder("Tequila");
 luna.drink(sierra);
 
-const meat  = bar.makeOrder("Steak");
+const meat = bar.makeOrder("Steak");
 bob.eat(meat);
 
 const fish = bar.makeOrder("Dorado");
 bob.eat(fish);
+const newYork = bar.makeOrder("Burger");
+bob.eat(newYork);
 
 const chicken = bar.makeOrder("Chicken wings");
 luna.eat(chicken);
@@ -248,11 +263,11 @@ luna.eat(chicken);
 const candy = bar.makeOrder("Candy");
 luna.eat(candy);
 
-
 const juice = bar.makeOrder("Juice");
 luna.drink(juice);
 
 luna.puke();
+bob.puke();
 
 console.log(luna);
 console.log(bob);
