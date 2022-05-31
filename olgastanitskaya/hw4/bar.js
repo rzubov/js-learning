@@ -149,15 +149,7 @@ let bar = {
             let snackItem = findDrink(this.snacks);
             if (snackItem !== undefined) {
                 return snackItem;
-            } /*else {
-                drinkItem = beverage.type === undefined;
-                snackItem = snack.isEffective = undefined;
-                return {
-                    drinkItem,
-                    snackItem
-                }
-
-            }*/
+            }
         }
     },
 
