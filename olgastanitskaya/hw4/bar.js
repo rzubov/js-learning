@@ -53,8 +53,7 @@ let visitor = {
     canDrink(beverage) {
         let capacityDrink = 0;
 
-        if (beverage.type === undefined) {
-        } else if (beverage.type === "lowAlcohol") {
+       if (beverage.type === "lowAlcohol") {
             capacityDrink = 10;
         } else if (beverage.type === "highAlcohol") {
             capacityDrink = 20;
@@ -62,9 +61,7 @@ let visitor = {
         return this.capacity >= capacityDrink;
     },
     puke() {
-
-        this.capacity += 15;
-        this.capacity = Math.min(100, this.capacity); //функция Math.min() выбираем минимальное число из переданных чисел
+        this.capacity = Math.min(100, this.capacity + 15); //функция Math.min() выбираем минимальное число из переданных чисел
         console.log(this.name + ": 🤮🤮🤮")
     },
     drink(beverage) {
@@ -90,19 +87,13 @@ let visitor = {
     },
     eat: function (snack) {
 
-        switch (snack.isEffective) {
-            case true:
-                this.capacity += 10;
-                break;
-            case false:
-                this.capacity += 5;
-                break;
-            case undefined:
-                this.capacity += 0;
-                break;
-            default:
-                console.log(`Этот товар недоступен!`);
+        if (snack.isEffective) {
+
+            this.capacity += 10;
+        } else {
+            this.capacity += 5;
         }
+
         if (this.capacity > 100) {
             this.capacity = 100;
         }
@@ -151,22 +142,22 @@ let bar = {
             return arrItem;
         }
 
-        let Drink = findDrink(this.drinks);
-        if (Drink !== undefined) {
-            return Drink;
+        let drinkItem = findDrink(this.drinks);
+        if (drinkItem !== undefined) {
+            return drinkItem;
         } else {
-            let Snack = findDrink(this.snacks);
-            if (Snack !== undefined) {
-                return Snack;
-            } else {
-                Drink = beverage.type === undefined;
-                Snack = snack.isEffective = undefined;
+            let snackItem = findDrink(this.snacks);
+            if (snackItem !== undefined) {
+                return snackItem;
+            } /*else {
+                drinkItem = beverage.type === undefined;
+                snackItem = snack.isEffective = undefined;
                 return {
-                    Drink,
-                    Snack
+                    drinkItem,
+                    snackItem
                 }
 
-            }
+            }*/
         }
     },
 
