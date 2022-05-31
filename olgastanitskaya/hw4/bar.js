@@ -51,30 +51,26 @@ let visitor = {
     age: 0,
     capacity: 0,
     canDrink(beverage) {
-        let capacityDrink;
+        let capacityDrink = 0;
 
         if (beverage.type === undefined) {
-            capacityDrink = 0;
         } else if (beverage.type === "lowAlcohol") {
             capacityDrink = 10;
         } else if (beverage.type === "highAlcohol") {
             capacityDrink = 20;
-        } else {
-            console.log("Этот товар уже недоступен!")
         }
-
         return this.capacity >= capacityDrink;
     },
     puke() {
 
         this.capacity += 15;
-        if (this.capacity > 100) {
-            this.capacity = 100;
-        }
+        this.capacity = Math.min(100, this.capacity); //функция Math.min() выбираем минимальное число из переданных чисел
         console.log(this.name + ": 🤮🤮🤮")
     },
     drink(beverage) {
-
+        if (!beverage?.type) {
+            return;
+        }
         if (this.canDrink(beverage)) {
             switch (beverage.type) {
                 case "lowAlcohol":
@@ -163,7 +159,6 @@ let bar = {
             if (Snack !== undefined) {
                 return Snack;
             } else {
-                console.log(`Извините! ${item} больше нет!`);
                 Drink = beverage.type === undefined;
                 Snack = snack.isEffective = undefined;
                 return {
@@ -235,6 +230,7 @@ console.log(bar);
 bar.enter(luna);
 bar.enter(lisa);
 
+
 const guinness = bar.makeOrder("Beer");
 luna.drink(guinness);
 const jack = bar.makeOrder("Whiskey");
@@ -261,10 +257,16 @@ const chicken = bar.makeOrder("Chicken wings");
 luna.eat(chicken);
 
 const candy = bar.makeOrder("Candy");
-luna.eat(candy);
+if (candy) {
+    luna.eat(candy);
+
+}
 
 const juice = bar.makeOrder("Juice");
-luna.drink(juice);
+if (juice) {
+    luna.drink(juice);
+}
+
 
 luna.puke();
 bob.puke();
