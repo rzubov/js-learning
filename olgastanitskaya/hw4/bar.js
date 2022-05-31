@@ -94,9 +94,7 @@ let visitor = {
             this.capacity += 5;
         }
 
-        if (this.capacity > 100) {
-            this.capacity = 100;
-        }
+        this.capacity = Math.min(100, this.capacity);
     }
 };
 
