@@ -154,6 +154,7 @@ const thomas = new Visitor("Thomas", 18, 10);
 const tina = new Visitor("Tina", 18, 23);
 
 
+
 const goosePub = new Bar("Goose Pub", 2);
 const moskvich = new Bar("Moskvich bar", 3);
 
