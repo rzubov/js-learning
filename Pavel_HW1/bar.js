@@ -1,26 +1,26 @@
 const visitor = {
   name: "John",
   age: 25,
-  capacity: 100,
-  canDrink: function () {
-    return ((orderDrinkType === "highAlcogol") && (this.capacity >= 20) || (orderDrinkType === "lowAlcogol") && (this.capacity >= 10))
+  capacity: 60,
+  canDrink: function (beverage) {
+    return ((beverage.type === "highAlcogol") && (this.capacity >= 20) || (beverage.type === "lowAlcogol") && (this.capacity >= 10))
   },
   puke: function () {
     this.capacity += 15;
     console.log("🤮");
   },
   drink: function (beverage) {
-    if (!this.canDrink) {
+    if (!this.canDrink(beverage)) {
       return this.puke();
     }
-    if (bar.makeOrder.type === "highAlcogol") {
-      this.capacity -= 20;
-    } else if (bar.makeOrder.type === "lowAlcogol") {
-      this.capacity -= 10;
+    if (beverage.type === "highAlcogol") {
+      this.capacity -= 20
+    } else if (beverage.type === "lowAlcogol") {
+      this.capacity -= 10
     }
   },
-  eat: function (snak) {
-    if (!bar.makeOrder.isEffective) {
+  eat: function (snack) {
+    if (snack.isEffective === false) {
       this.capacity += 5;
     } else {
       this.capacity += 10;
@@ -39,7 +39,7 @@ const bar = {
     {name: "wine", type: "lowAlcogol"},
     {name: "champaign", type: "lowAlcogol"}
   ],
-  snaks: [
+  snacks: [
     {name: "chips", isEffective: false},
     {name: "crackers", isEffective: false},
     {name: "lime", isEffective: false},
@@ -77,42 +77,32 @@ const bar = {
   },
 
   makeOrder(item) {
-    //orderSnackType = this.snaks[this.snaksIndex(item)].isEffective;
-    orderDrinkType = this.drinks[this.drinksIndex(item)].type;
-    if (this.someDrinksItem(item)) {
-      return this.drinks.splice(this.drinksIndex(item), 1);
-      //return this.drinks[drinksIndex(item)];
-    } else if (this.someSnaksItem(item)) {
-      return this.snaks.splice(this.snaksIndex(item), 1);
-      //return this.snaks[drinksIndex(item)];
+    let drinkOrder = this.drinks.find((el) => el.name === item);
+    let snackOrder = this.snacks.find((el) => el.name === item);
+      if(drinkOrder) {
+      this.drinks.splice(this.drinksIndex(item), 1);
+      return drinkOrder
+    } else if(snackOrder) {
+      this.snacks.splice(this.snacksIndex(item), 1);
+      return snackOrder
     } else {
       console.log(`Извините, ${item} больше нет!`);
     }
   },
+
   drinksIndex(item) {
     return this.drinks.findIndex((el) => el.name === item)
   },
-  snaksIndex(item) {
-    return this.snaks.findIndex((el) => el.name === item)
+  snacksIndex(item) {
+    return this.snacks.findIndex((el) => el.name === item)
   },
-  someDrinksItem(item) {
-    return this.drinks.some((elem) => elem.name === item)
-  },
-  someSnaksItem(item) {
-   return this.snaks.some((elem) => elem.name === item)
-  }
 }
 
-//const orderType = bar.makeOrder.type;
-
-
-
-
-
-//const kindOfBeverage = (beverage) => bar.drinks[bar.drinks.findIndex((el) => el.name === beverage)].type;
-//const highBeverage = (beverage) => kindOfBeverage(beverage) === "highAlcogol";
-//const lowBeverage = (beverage) => kindOfBeverage(beverage) === "lowAlcogol";
-
-//const kindOfsnak = (snak) => bar.snaks[bar.snaks.findIndex((el) => el.name === snak)].isEffective;
-
-
+const whiskey = bar.makeOrder('whiskey')
+visitor.drink(whiskey);
+const vodka = bar.makeOrder('vodka')
+visitor.drink(vodka);
+const brandy = bar.makeOrder('brandy')
+visitor.drink(brandy);
+const beer = bar.makeOrder('beer')
+visitor.drink(beer);
