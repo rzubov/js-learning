@@ -183,8 +183,8 @@ angela.drink(guinness);
 const jack = goosePub.makeOrder("Whiskey");
 richard.drink(jack);
 
-const BoraBora = goosePub.makeOrder("Shake");
-angela.drink(BoraBora);
+const boraBora = goosePub.makeOrder("Shake");
+angela.drink(boraBora);
 
 const nemiroff = goosePub.makeOrder("Vodka");
 angela.drink(nemiroff);
