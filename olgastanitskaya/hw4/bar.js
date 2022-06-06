@@ -117,9 +117,9 @@ let bar = {
             this.visitors.push(visitor);
             this.greet(visitor);
         } else if (visitor.age >= 18 && !isCapacity) {
-            this.decline();
+            this.decline(visitor);
         } else {
-            this.expel(visitor);
+            this.expel();
         }
     },
     greet(visitor) {
@@ -214,6 +214,7 @@ bar.enter(lisa);
 
 const guinness = bar.makeOrder("Beer");
 luna.drink(guinness);
+
 const jack = bar.makeOrder("Whiskey");
 bob.drink(jack);
 
